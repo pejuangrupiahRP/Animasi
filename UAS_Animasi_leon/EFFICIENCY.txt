@@ -1,0 +1,47 @@
+import bpy
+import math
+
+def create_text(text, location, scale):
+    # Create a new text object
+    bpy.ops.object.text_add(location=location)
+    text_obj = bpy.context.object
+    text_obj.name = "EfficiencyText"
+    text_obj.data.body = text
+    text_obj.scale = scale
+
+    # Set text to 3D
+    bpy.ops.object.convert(target='MESH')
+
+    # Create a new material and assign it to the text object
+    mat = bpy.data.materials.new("TextMaterial")
+    text_obj.data.materials.append(mat)
+
+    # Set the color of the material
+    mat.use_nodes = False  # Turn off node-based materials for simplicity
+    mat.diffuse_color = (0.525, 0.949, 0.282, 1.0)  # Warna kuning (RGBA)
+
+    return text_obj
+
+if __name__ == "__main__":
+    # Clear existing objects
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete()
+
+    # Set the font file path (update with your own font file if needed)
+    font_path = "D:/KULIAH/TI/Semester4/Animasi/project/font.ttf"
+
+    # Load the font
+    bpy.data.fonts.load(font_path)
+
+    # Parameters for the text
+    text = "EFFICIENCY"
+    location = (-18, -20, 0.5)
+    scale = (8, 8, 5)
+
+    # Create the text object with the specified color
+    text_obj = create_text(text, location, scale)
+
+    # Rotate the text to make it stand vertically and rotate around Z-axis
+    angle_x = math.radians(90)  # Rotate 90 degrees around the X-axis (vertical)
+    angle_z = math.radians(90)  # Rotate 45 degrees around the Z-axis (or any other angle you prefer)
+    text_obj.rotation_euler = (angle_x, 0, angle_z)

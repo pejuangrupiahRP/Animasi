@@ -1,0 +1,50 @@
+import bpy
+
+path_texture = r"D:\\KULIAH\TI\Semester4\Animasi\project\grass.jpg"
+
+
+def create_material_with_texture(name, texture_path):
+    material = bpy.data.materials.new(name)
+    material.use_nodes = True
+    material.node_tree.nodes.clear()
+    
+    # Create the image texture node
+    tex_image = material.node_tree.nodes.new(type='ShaderNodeTexImage')
+    tex_image.image = bpy.data.images.load(texture_path)
+    
+    # Create the shader output node
+    shader_output = material.node_tree.nodes.new(type='ShaderNodeOutputMaterial')
+    
+    # Link the nodes
+    material.node_tree.links.new(tex_image.outputs['Color'], shader_output.inputs['Surface'])
+    
+    return material
+
+def create_plane(name, origin, vertices, edges, faces, material):
+    new_mesh = bpy.data.meshes.new(name)
+    new_mesh.from_pydata(vertices, edges, faces)
+    new_mesh.update()
+    
+    new_object = bpy.data.objects.new(name, new_mesh)
+    view_layer = bpy.context.view_layer
+    view_layer.active_layer_collection.collection.objects.link(new_object)
+    
+    if material is not None:
+        new_object.data.materials.append(material)
+    
+    return new_object
+
+def run(origin):
+    # Vertices, edges, and faces for the plane
+    vertices = [(-20, 20, 0), (-20, -20, 0), (40, -20, 0), (40, 20, 0), (-20, 20, -1), (-20, -20, -1), (40, -20, -1), (40, 20, -1)]
+    edges = []
+    faces = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (0, 3, 7, 4)]
+    
+    # Create the material with texture
+    material_with_texture = create_material_with_texture("Tekstur", path_texture)
+    
+    # Create the plane object with the material
+    create_plane('Alas Atas', (0, 0, 0), vertices, edges, faces, material_with_texture)
+
+if __name__ == "__main__":
+    run((0, 0, 0))
